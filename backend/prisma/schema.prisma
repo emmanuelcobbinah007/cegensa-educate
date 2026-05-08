@@ -1,0 +1,76 @@
+// Prisma schema — Kasa UG backend
+// Database: Neon PostgreSQL
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ── Committee Members ─────────────────────────────────────────
+// Stores auth credentials for Anti-Sexual Harassment Committee members.
+// Maps to the users + committee_members tables from schema.sql — kept
+// as a single flat model for the MVP.
+
+model CommitteeMember {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  fullName     String    @map("full_name")
+  role         String    @default("member") // member | chair | secretary
+  department   String?
+  isActive     Boolean   @default(true)    @map("is_active")
+  lastLogin    DateTime? @map("last_login")
+  createdAt    DateTime  @default(now())   @map("created_at")
+  updatedAt    DateTime  @updatedAt        @map("updated_at")
+
+  @@map("committee_members")
+}
+
+// ── Incidents ─────────────────────────────────────────────────
+// Submitted incident reports from the public-facing report form.
+// Maps to the cases table from schema.sql.
+
+model Incident {
+  id         String @id @default(cuid())
+  caseNumber String @unique @map("case_number") // e.g. UG-SH-2026-0001
+
+  status         String @default("submitted")   // matches case_status enum
+  misconductType String @map("misconduct_type") // matches misconduct_type enum
+  severity       Int    @default(1)             // 1–5
+
+  // Complainant
+  isAnonymous            Boolean @default(false) @map("is_anonymous")
+  complainantName        String? @map("complainant_name")
+  complainantEmail       String? @map("complainant_email")
+  complainantAffiliation String? @map("complainant_affiliation")
+
+  // Respondent
+  respondentName         String? @map("respondent_name")
+  respondentDepartment   String? @map("respondent_department")
+  respondentAffiliation  String? @map("respondent_affiliation")
+
+  // Incident details
+  incidentDescription String  @map("incident_description")
+  incidentLocation    String? @map("incident_location")
+  incidentDateFrom    String? @map("incident_date_from")
+  incidentDateTo      String? @map("incident_date_to")
+  incidentFrequency   String? @map("incident_frequency") // single_incident | repeated | ongoing
+
+  // Additional info
+  hasWitnesses        Boolean @default(false) @map("has_witnesses")
+  witnessNames        String? @map("witness_names")
+  mediationRequested  Boolean @default(false) @map("mediation_requested")
+
+  // Acknowledgements
+  rightsAcknowledged          Boolean @default(false) @map("rights_acknowledged")
+  confidentialityAcknowledged Boolean @default(false) @map("confidentiality_acknowledged")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@map("incidents")
+}
