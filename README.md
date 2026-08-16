@@ -558,8 +558,8 @@ GitHub: @emmanuelcobbinah007
 
 For issues, questions, or feedback:
 - Open an issue on GitHub
-- Email: [your-email]
-- Connect on LinkedIn
+- Email: emmanuelcobbinah707@gmail.com
+- Connect on LinkedIn: https://linkedin.com/in/emmanuelcobbinah
 
 ---
 
